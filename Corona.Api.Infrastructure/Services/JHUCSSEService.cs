@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Corona.Api.Application.Dtos;
+using Corona.Api.Application.Services;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -9,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Corona.Api.Infrastructure.Services
 {
-    public class JHUCSSEService
+    public class JhuCsseService : IJhuCsseService
     {
         private const string JHUCSSE_REPO = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/"; // csse_covid_19_time_series/time_series_19-covid-
         private const string TIMESERIES = "csse_covid_19_time_series/time_series_19-covid-";
@@ -20,7 +22,7 @@ namespace Corona.Api.Infrastructure.Services
         private readonly Uri _baseAddress;
         private readonly HttpClient _httpClient;
 
-        public JHUCSSEService()
+        public JhuCsseService()
         {
             Uri.TryCreate(JHUCSSE_REPO, UriKind.RelativeOrAbsolute, out _baseAddress);
             _httpClient = new HttpClient
@@ -33,23 +35,24 @@ namespace Corona.Api.Infrastructure.Services
         // add listener
         // remove listener
         // stop watching the repo
-
-        public async Task<List<Report>> GetLatestDataAsync(CancellationToken cancellationToken)
+        public Task<List<CoronaTimeSeriesRegionDto>> GetLatestDataAsync()
+            => GetLatestDataAsync(CancellationToken.None);
+        public async Task<List<CoronaTimeSeriesRegionDto>> GetLatestDataAsync(CancellationToken cancellationToken)
         {
-            List<Report> reports = new List<Report>();
+            List<CoronaTimeSeriesRegionDto> reports = new List<CoronaTimeSeriesRegionDto>();
             List<DateTime> dates;
 
-            using TextReader confirmedStream = await GetStreamReaderAsync(CONFIRMED, cancellationToken);
+            using TextReader confirmedStream = await GetStreamReaderAsync(CONFIRMED, cancellationToken).ConfigureAwait(false);
             if (cancellationToken.IsCancellationRequested)
-                return await Task.FromCanceled<List<Report>>(cancellationToken);
+                return Task.FromCanceled<List<CoronaTimeSeriesRegionDto>>(cancellationToken).Result;
 
-            using TextReader recoveredStream = await GetStreamReaderAsync(RECOVERED, cancellationToken);
+            using TextReader recoveredStream = await GetStreamReaderAsync(RECOVERED, cancellationToken).ConfigureAwait(false);
             if (cancellationToken.IsCancellationRequested)
-                return await Task.FromCanceled<List<Report>>(cancellationToken);
+                return Task.FromCanceled<List<CoronaTimeSeriesRegionDto>>(cancellationToken).Result;
             
-            using TextReader deathsStream = await GetStreamReaderAsync(DEATHS, cancellationToken);
+            using TextReader deathsStream = await GetStreamReaderAsync(DEATHS, cancellationToken).ConfigureAwait(false);
             if (cancellationToken.IsCancellationRequested)
-                return await Task.FromCanceled<List<Report>>(cancellationToken);
+                return Task.FromCanceled<List<CoronaTimeSeriesRegionDto>>(cancellationToken).Result;
 
             // dispose headers & capture dates
             CultureInfo usCulture = new CultureInfo("us-US");
@@ -65,23 +68,36 @@ namespace Corona.Api.Infrastructure.Services
                 confirmed = SmartSplit(confirmedStream.ReadLine());
                 recovered = SmartSplit(recoveredStream.ReadLine());
                 deaths = SmartSplit(deathsStream.ReadLine());
-                Record record = new Record(confirmed[0], Convert.ToSingle(confirmed[2]), Convert.ToSingle(confirmed[3]));
+
+                var report = new CoronaTimeSeriesRegionDto
+                {
+                    Region = string.IsNullOrWhiteSpace(confirmed[0]) ? confirmed[1] : $"{confirmed[0].Replace(",", string.Empty)}, {confirmed[1]}",
+                    Latitude = confirmed[2],
+                    Longitude = confirmed[3]
+                };
+
+                var records = new List<CoronaTimeSeriesRecordDto>();
+
                 List<int> confirmedValues = confirmed.Skip(4).Select(int.Parse).ToList();
                 List<int> recoveredValues = recovered.Skip(4).Select(int.Parse).ToList();
                 List<int> deathsValues = deaths.Skip(4).Select(int.Parse).ToList();
                 for (int j = 0; j < dates.Count; j++)
                 {
-                    record.Data.Add(new Data(dates[j], confirmedValues[j], recoveredValues[j], deathsValues[j]));
+                    records.Add(new CoronaTimeSeriesRecordDto()
+                    {
+                        TimeStamp = dates[j],
+                        Confirmed = confirmedValues[j],
+                        Deaths = deathsValues[j],
+                        Recoverd = recoveredValues[j]
+                    });
                 }
-                Report report = reports.Find(r => r.Name.Equals(confirmed[1]));
-                if (report == default)
-                {
-                    report = new Report(confirmed[1], record);
-                    reports.Add(report);
-                }
-                else
-                    report.Records.Add(record);
+
+                report.Records = records;
+                
+                reports.Add(report);
             }
+
+            return reports;
 
             static string[] SmartSplit(string line, char separator = ',')
             {
@@ -118,8 +134,6 @@ namespace Corona.Api.Infrastructure.Services
                 lines.Add(token);
                 return lines.ToArray();
             }
-
-            return reports;
         }
 
         private async Task<StreamReader> GetStreamReaderAsync(string requestUri, CancellationToken cancellationToken)

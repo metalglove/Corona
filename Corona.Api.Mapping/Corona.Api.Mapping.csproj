@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Corona.Api.Infrastructure\Corona.Api.Infrastructure.csproj" />
     <ProjectReference Include="..\Corona.Api.Persistence.EFCore\Corona.Api.Persistence.EFCore.csproj" />
   </ItemGroup>
 

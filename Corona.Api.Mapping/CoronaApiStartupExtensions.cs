@@ -1,6 +1,7 @@
 ﻿using Corona.Api.Application.Dtos;
 using Corona.Api.Application.Services;
 using Corona.Api.Domain.Entities;
+using Corona.Api.Infrastructure.Services;
 using Corona.Api.Persistence.EFCore.Factories;
 using Corona.Persistence.EFCore.Contexts;
 using Corona.Persistence.EFCore.Validators;
@@ -63,6 +64,7 @@ namespace Corona.Api.Mapping
 
             #region Services
             serviceCollection.AddTransient<IService<CoronaTimeSeriesRegionDto, string>, CoronaTimeSeriesRegionService>();
+            serviceCollection.AddTransient<IJhuCsseService, JhuCsseService>();
             #endregion Services
 
             serviceCollection.VerifyDatabaseConnection<CoronaDbContext>();
