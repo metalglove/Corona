@@ -1,20 +1,18 @@
 <template>
-    <div id="app">
-        <Home msg="Hello world!" />
-    </div>
+    <v-app>
+        <router-view />
+    </v-app>
 </template>
 
 <script lang="ts">
     import { Component, Vue } from 'vue-property-decorator';
-    import Home from './components/Home.vue';
 
-    @Component({
-        components: {
-            Home
-        }
-    })
+    @Component({})
     export default class App extends Vue { }
 </script>
 
 <style>
+    * {
+        font-family: 'Nunito';
+    }
 </style>
