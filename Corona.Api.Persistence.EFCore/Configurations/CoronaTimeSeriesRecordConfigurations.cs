@@ -14,7 +14,7 @@ namespace Corona.Persistence.EFCore.Configurations
         public void Configure(EntityTypeBuilder<CoronaTimeSeriesRecord> builder)
         {
             builder.HasKey(p => new { p.Region, p.TimeStamp });
-            builder.Ignore(p => ((IEntity)p).Id);
+            builder.Ignore(p => ((IEntity<string>)p).Id);
         }
     }
 }

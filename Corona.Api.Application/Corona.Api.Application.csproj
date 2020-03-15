@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Glovali.Common.Application" Version="1.0.1" />
+    <PackageReference Include="Glovali.Common.Application" Version="1.0.2" />
   </ItemGroup>
 
   <ItemGroup>

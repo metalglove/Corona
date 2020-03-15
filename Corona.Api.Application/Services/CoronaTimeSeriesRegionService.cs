@@ -6,9 +6,9 @@ using Glovali.Common.Application.Interfaces;
 
 namespace Corona.Api.Application.Services
 {
-    public class CoronaTimeSeriesRegionService : BaseService<CoronaTimeSeriesRegion, CoronaTimeSeriesRegionDto>
+    public class CoronaTimeSeriesRegionService : BaseService<CoronaTimeSeriesRegion, CoronaTimeSeriesRegionDto, string>
     {
-        public CoronaTimeSeriesRegionService(IRepository<CoronaTimeSeriesRegion> entityRepository, IMapper mapper) : base(entityRepository, mapper)
+        public CoronaTimeSeriesRegionService(IRepository<CoronaTimeSeriesRegion, string> entityRepository, IMapper mapper) : base(entityRepository, mapper)
         {
         }
     }

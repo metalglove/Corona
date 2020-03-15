@@ -7,7 +7,7 @@ namespace Corona.Persistence.EFCore.Validators
     /// <summary>
     /// Represents the <see cref="CoronaTimeSeriesRecordValidator"/> class.
     /// </summary>
-    public class CoronaTimeSeriesRecordValidator : IEntityValidator<CoronaTimeSeriesRecord>
+    public class CoronaTimeSeriesRecordValidator : IEntityValidator<CoronaTimeSeriesRecord, string>
     {
         /// <inheritdoc cref="IEntityValidator{T}.Validate(T)"/>
         public bool Validate(CoronaTimeSeriesRecord entity)
