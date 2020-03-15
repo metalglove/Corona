@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Corona.Api.Application.Dtos;
-using Corona.Api.Domain;
+using Corona.Api.Domain.Entities;
 using Glovali.Common.Application.Abstractions;
 using Glovali.Common.Application.Interfaces;
 

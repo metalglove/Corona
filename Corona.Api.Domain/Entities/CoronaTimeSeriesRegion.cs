@@ -1,8 +1,7 @@
 using Glovali.Common.Domain;
-using System;
 using System.Collections.Generic;
 
-namespace Corona.Api.Domain
+namespace Corona.Api.Domain.Entities
 {
     public class CoronaTimeSeriesRegion : IEntity<string>
     {
@@ -10,6 +9,6 @@ namespace Corona.Api.Domain
         public string Region { get; set; } = null!;
         public string Latitude { get; set; } = null!;
         public string Longitude { get; set; } = null!;
-        public IEnumerable<CoronaTimeSeriesRecord> Records { get; set; } = null!;
+        public virtual IEnumerable<CoronaTimeSeriesRecord> Records { get; set; } = null!;
     }
 }

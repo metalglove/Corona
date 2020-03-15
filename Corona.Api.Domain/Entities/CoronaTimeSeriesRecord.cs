@@ -1,7 +1,6 @@
 ﻿using Glovali.Common.Domain;
-using System;
 
-namespace Corona.Api.Domain
+namespace Corona.Api.Domain.Entities
 {
     public class CoronaTimeSeriesRecord : TimeSeriesRecord, IEntity<string>
     {

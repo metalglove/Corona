@@ -1,4 +1,4 @@
-﻿using Corona.Api.Domain;
+﻿using Corona.Api.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

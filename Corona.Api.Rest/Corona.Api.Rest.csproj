@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Corona.Api.Domain\Corona.Api.Domain.csproj" />
+    <ProjectReference Include="..\Corona.Api.Mapping\Corona.Api.Mapping.csproj" />
   </ItemGroup>
 
 

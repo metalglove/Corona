@@ -1,4 +1,4 @@
-﻿using Corona.Api.Domain;
+﻿using Corona.Api.Domain.Entities;
 using Glovali.Common.Persistence.Exceptions;
 using Glovali.Common.Persistence.Interfaces;
 

@@ -6,10 +6,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="appSettings.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="appSettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Glovali.Common.Persistence.EFCore" Version="1.0.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Corona.Api.Application\Corona.Api.Application.csproj" />
     <ProjectReference Include="..\Corona.Api.Domain\Corona.Api.Domain.csproj" />
   </ItemGroup>
 

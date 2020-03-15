@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Corona.Api.Domain
+namespace Corona.Api.Domain.Entities
 {
     public class TimeSeriesRecord
     {
