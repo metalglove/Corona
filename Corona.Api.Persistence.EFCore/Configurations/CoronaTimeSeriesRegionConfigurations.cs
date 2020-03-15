@@ -1,4 +1,5 @@
 ﻿using Corona.Api.Domain.Entities;
+using Glovali.Common.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -12,6 +13,7 @@ namespace Corona.Persistence.EFCore.Configurations
         /// <inheritdoc cref="IEntityTypeConfiguration{TEntity}.Configure"/>
         public void Configure(EntityTypeBuilder<CoronaTimeSeriesRegion> builder)
         {
+            builder.Ignore(p => ((IEntity<string>)p).Id);
             builder.HasKey(p => p.Region);
             builder
                 .HasMany(p => p.Records)

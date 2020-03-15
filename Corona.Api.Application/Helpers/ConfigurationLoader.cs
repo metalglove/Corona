@@ -22,7 +22,9 @@ namespace Corona.Api.Application.Helpers
             if (_currentConfiguration != null)
                 return _currentConfiguration;
 
-            string env = Environment.GetEnvironmentVariable(AspNetCore_Environment) ?? throw new NullReferenceException($"{AspNetCore_Environment} cannot be null.");
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+            string env = Environment.GetEnvironmentVariable(AspNetCore_Environment);
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
             string basePath = Directory.GetCurrentDirectory();
             IConfigurationBuilder builder = new ConfigurationBuilder()
                 .SetBasePath(basePath)
