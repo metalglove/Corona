@@ -35,24 +35,24 @@ namespace Corona.Api.Infrastructure.Services
         // add listener
         // remove listener
         // stop watching the repo
-        public Task<List<CoronaTimeSeriesRegionDto>> GetLatestDataAsync()
+        public Task<List<ReportDto>> GetLatestDataAsync()
             => GetLatestDataAsync(CancellationToken.None);
-        public async Task<List<CoronaTimeSeriesRegionDto>> GetLatestDataAsync(CancellationToken cancellationToken)
+        public async Task<List<ReportDto>> GetLatestDataAsync(CancellationToken cancellationToken)
         {
-            List<CoronaTimeSeriesRegionDto> reports = new List<CoronaTimeSeriesRegionDto>();
+            List<ReportDto> reports = new List<ReportDto>();
             List<DateTime> dates;
 
             using TextReader confirmedStream = await GetStreamReaderAsync(CONFIRMED, cancellationToken).ConfigureAwait(false);
             if (cancellationToken.IsCancellationRequested)
-                return Task.FromCanceled<List<CoronaTimeSeriesRegionDto>>(cancellationToken).Result;
+                return Task.FromCanceled<List<ReportDto>>(cancellationToken).Result;
 
             using TextReader recoveredStream = await GetStreamReaderAsync(RECOVERED, cancellationToken).ConfigureAwait(false);
             if (cancellationToken.IsCancellationRequested)
-                return Task.FromCanceled<List<CoronaTimeSeriesRegionDto>>(cancellationToken).Result;
+                return Task.FromCanceled<List<ReportDto>>(cancellationToken).Result;
             
             using TextReader deathsStream = await GetStreamReaderAsync(DEATHS, cancellationToken).ConfigureAwait(false);
             if (cancellationToken.IsCancellationRequested)
-                return Task.FromCanceled<List<CoronaTimeSeriesRegionDto>>(cancellationToken).Result;
+                return Task.FromCanceled<List<ReportDto>>(cancellationToken).Result;
 
             // dispose headers & capture dates
             CultureInfo usCulture = new CultureInfo("us-US");
@@ -63,38 +63,43 @@ namespace Corona.Api.Infrastructure.Services
             string[] confirmed;
             string[] recovered;
             string[] deaths;
-            for (int i = 0; i < 442; i++)
+            for (int i = 0; i < 463; i++)
             {
                 confirmed = SmartSplit(confirmedStream.ReadLine());
                 recovered = SmartSplit(recoveredStream.ReadLine());
                 deaths = SmartSplit(deathsStream.ReadLine());
-
-                var report = new CoronaTimeSeriesRegionDto
+                RecordDto record = new RecordDto()
                 {
-                    Region = string.IsNullOrWhiteSpace(confirmed[0]) ? confirmed[1] : $"{confirmed[0].Replace(",", string.Empty)}, {confirmed[1]}",
-                    Latitude = confirmed[2],
-                    Longitude = confirmed[3]
+                    Name = confirmed[0],
+                    Latitude = Convert.ToSingle(confirmed[2]),
+                    Longitude = Convert.ToSingle(confirmed[3]),
+                    Data = new List<DataDto>()
                 };
-
-                var records = new List<CoronaTimeSeriesRecordDto>();
-
                 List<int> confirmedValues = confirmed.Skip(4).Select(int.Parse).ToList();
                 List<int> recoveredValues = recovered.Skip(4).Select(int.Parse).ToList();
                 List<int> deathsValues = deaths.Skip(4).Select(int.Parse).ToList();
                 for (int j = 0; j < dates.Count; j++)
                 {
-                    records.Add(new CoronaTimeSeriesRecordDto()
+                    record.Data.Add(new DataDto() 
                     {
-                        TimeStamp = dates[j],
-                        Confirmed = confirmedValues[j],
-                        Deaths = deathsValues[j],
-                        Recoverd = recoveredValues[j]
+                        Date = dates[j], 
+                        Confirmed = confirmedValues[j], 
+                        Recovered = recoveredValues[j], 
+                        Deaths = deathsValues[j] 
                     });
                 }
-
-                report.Records = records;
-                
-                reports.Add(report);
+                ReportDto report = reports.SingleOrDefault(r => r.Id.Equals(confirmed[1]));
+                if (report == default)
+                {
+                    report = new ReportDto() 
+                    {
+                        Id = confirmed[1], 
+                        Records = new List<RecordDto>() { record } 
+                    };
+                    reports.Add(report);
+                }
+                else
+                    report.Records.Add(record);
             }
 
             return reports;
@@ -142,53 +147,6 @@ namespace Corona.Api.Infrastructure.Services
             if (!httpResponseMessage.IsSuccessStatusCode)
                 return await Task.FromCanceled<StreamReader>(cancellationToken);
             return new StreamReader(await httpResponseMessage.Content.ReadAsStreamAsync());
-        }
-    }
-
-    public readonly struct Report
-    {
-        public string Name { get; }
-        public List<Record> Records { get; }
-
-        public Report(string name, Record record)
-        {
-            Name = name;
-            Records = new List<Record>() { record };
-        }
-
-        public static bool operator ==(Report a, Report b) => a.Name == b.Name;
-        public static bool operator !=(Report a, Report b) => !(a.Name == b.Name);
-    }
-
-    public readonly struct Record
-    {
-        public string Name { get; }
-        public List<Data> Data { get; }
-        public float Latitude { get; }
-        public float Longitude { get; }
-
-        public Record(string name, float latitude, float longitude)
-        {
-            Name = name;
-            Data = new List<Data>();
-            Latitude = latitude;
-            Longitude = longitude;
-        }
-    }
-
-    public readonly struct Data
-    {
-        public DateTime Date { get; }
-        public int Confirmed { get; }
-        public int Deaths { get; }
-        public int Recovered { get; }
-
-        public Data(DateTime date, int confirmed, int deaths, int recovered)
-        {
-            Date = date;
-            Confirmed = confirmed;
-            Deaths = deaths;
-            Recovered = recovered;
         }
     }
 }

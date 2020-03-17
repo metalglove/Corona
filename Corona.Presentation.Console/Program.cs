@@ -14,7 +14,7 @@ namespace Corona.Presentation.CLI
         public static async Task Main(string[] args)
         {
             JhuCsseService service = new JhuCsseService();
-            List<CoronaTimeSeriesRegionDto> reports = await service.GetLatestDataAsync(CancellationToken.None);
+            List<ReportDto> reports = await service.GetLatestDataAsync(CancellationToken.None);
             string json = JsonSerializer.Serialize(reports, new JsonSerializerOptions() { WriteIndented = true });
             File.WriteAllText(@"data.json", json);
             Console.WriteLine("Done");

@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace Corona.Api.Rest.Controllers
 {
     [Route("corona")]
-    public class CoronaTimeSeriesRestController : RestController<CoronaTimeSeriesRegionDto, string>
+    public class CoronaTimeSeriesRestController : RestController<ReportDto, string>
     {
-        public CoronaTimeSeriesRestController(IService<CoronaTimeSeriesRegionDto, string> service) : base(service)
+        public CoronaTimeSeriesRestController(IService<ReportDto, string> service) : base(service)
         {
         }
     }

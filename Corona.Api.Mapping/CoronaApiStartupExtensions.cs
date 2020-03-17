@@ -54,16 +54,15 @@ namespace Corona.Api.Mapping
             serviceCollection.AddTransient(p => p.GetService<IFactory<CoronaDbContext>>().Create());
 
             #region Validators
-            serviceCollection.AddTransient<IEntityValidator<CoronaTimeSeriesRecord, string>, CoronaTimeSeriesRecordValidator>();
-            serviceCollection.AddTransient<IEntityValidator<CoronaTimeSeriesRegion, string>, CoronaTimeSeriesRegionValidator>();
+            serviceCollection.AddTransient<IEntityValidator<Report, string>, ReportValidator>();
             #endregion Validators
 
             #region Repositories
-            serviceCollection.AddTransient<IRepository<CoronaTimeSeriesRegion, string>, Repository<CoronaTimeSeriesRegion, CoronaDbContext, string>>();
+            serviceCollection.AddTransient<IRepository<Report, string>, Repository<Report, CoronaDbContext, string>>();
             #endregion Repositories
 
             #region Services
-            serviceCollection.AddTransient<IService<CoronaTimeSeriesRegionDto, string>, CoronaTimeSeriesRegionService>();
+            serviceCollection.AddTransient<IService<ReportDto, string>, CoronaReportService>();
             serviceCollection.AddTransient<IJhuCsseService, JhuCsseService>();
             #endregion Services
 
