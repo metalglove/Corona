@@ -7,7 +7,7 @@ namespace Corona.Api.Application.Services
 {
     public interface IJhuCsseService
     {
-        Task<List<CoronaTimeSeriesRegionDto>> GetLatestDataAsync();
-        Task<List<CoronaTimeSeriesRegionDto>> GetLatestDataAsync(CancellationToken cancellationToken);
+        Task<List<ReportDto>> GetLatestDataAsync();
+        Task<List<ReportDto>> GetLatestDataAsync(CancellationToken cancellationToken);
     }
 }
